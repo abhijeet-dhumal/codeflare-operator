@@ -152,6 +152,14 @@ jobs:
       shell: bash
       if: ${{ env.SDK_RELEASE_STATUS_CODE != '200' }}
 
+    - name: Sync ODH Notebooks
+      if: ${{ env.SDK_RELEASE_STATUS_CODE == '200' }}
+      run: |
+        gh workflow run codeflare-sdk-release-sync.yml --repo github.com/opendatahub-io/notebooks --ref ${{ github.ref }} --field codeflare_sdk_release_version=${{ github.event.inputs.codeflare-sdk-version }} --field branch=main
+      env:
+        GITHUB_TOKEN: ${{ secrets.CODEFLARE_MACHINE_ACCOUNT_TOKEN }}
+      shell: bash
+
   release-codeflare-operator:
     needs: [release-mcad, release-instascale, release-codeflare-sdk]
     runs-on: ubuntu-latest
