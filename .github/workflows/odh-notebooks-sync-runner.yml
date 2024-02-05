@@ -1,0 +1,26 @@
+name: Codeflare-sdk ODH sync runner
+on:
+  workflow_dispatch:
+    inputs:
+      codeflare-sdk-version:
+        description: 'Version of CodeFlare-SDK to be released (for example: v0.0.0)'
+        required: true
+
+env:
+  SDK_RELEASE_STATUS_CODE: 200
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync ODH Notebooks runner
+        if: ${{ env.SDK_RELEASE_STATUS_CODE == '200' }}
+        run: |
+          gh workflow run odh-notebook-sync.yml \
+            --repo github.com/abhijeet-dhumal/codeflare-operator \
+            --ref ${{ github.ref }} \
+            --field codeflare_sdk_release_version=${{ github.event.inputs.codeflare-sdk-version }} \
+            --field branch=main  
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        shell: bash
