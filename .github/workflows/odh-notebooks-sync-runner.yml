@@ -20,7 +20,6 @@ jobs:
             --repo github.com/abhijeet-dhumal/codeflare-operator \
             --ref ${{ github.ref }} \
             --field codeflare_sdk_release_version=${{ github.event.inputs.codeflare-sdk-version }} \
-            --field branch=main  
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         shell: bash
