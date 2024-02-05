@@ -21,6 +21,19 @@ jobs:
         with:
           ref: ${{ env.BRANCH_NAME }}
 
+      - name: Fork repository
+        id: fork
+        run: | 
+          REPO_NAME=abhijeet-dhumal/notebooks
+          git clone --depth 1 --branch main "https://github.com/$REPO_NAME.git" Notebooks
+          cd notebooks 
+          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
+          git push -u origin main
+          echo "::set-output name=notebooks::$REPO_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        shell: bash
+
       - name: Create a new branch
         run: |
           echo ${{ env.UPDATER_BRANCH }}
@@ -71,7 +84,7 @@ jobs:
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
           git push origin ${{ env.UPDATER_BRANCH }}
 
-      - name: pull-request
+      - name: Create Pull Request
         run: | 
           gh pr create --repo github.com/abhijeet-dhumal/notebooks \
           --title "CodeFlare $(BUNDLE_VERSION)" \ 
