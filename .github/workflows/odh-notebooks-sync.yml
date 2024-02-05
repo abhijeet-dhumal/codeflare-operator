@@ -72,18 +72,15 @@ jobs:
           git push origin ${{ env.UPDATER_BRANCH }}
 
       - name: pull-request
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ env.UPDATER_BRANCH }}
-          destination_branch: ${{ env.BRANCH_NAME}}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_label: "automated pr"
-          pr_title: "[Digest Updater Action] Update notebook's pipfile to sync with Codeflare-SDK release"
-          pr_body: |
-            :rocket: This is an automated Pull Request.
+        run: | 
+          gh pr create --repo github.com/abhijeet-dhumal/notebooks \
+          --title "CodeFlare $(BUNDLE_VERSION)" \ 
+          --body ":rocket: This is an automated Pull Request. \n \n This PR updates the `Pipfile` to sync with latest Codeflare-SDK release. \n\n Created by `/.github/workflows/codeflare-sdk-release-sync.yaml` \n\n :exclamation: **IMPORTANT NOTE**: Remember to delete the ` ${{ env.UPDATER_BRANCH }}` branch after merging the changes" \
+          --label "automated pr"
+          --head abhijeet-dhumal:${{ env.UPDATER_BRANCH }} \
+          --base main
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        shell: bash
 
-            This PR updates the `Pipfile` to sync with latest Codeflare-SDK release.
-
-            Created by `/.github/workflows/codeflare-sdk-release-sync.yaml`
-
-            :exclamation: **IMPORTANT NOTE**: Remember to delete the ` ${{ env.UPDATER_BRANCH }}` branch after merging the changes
+        
