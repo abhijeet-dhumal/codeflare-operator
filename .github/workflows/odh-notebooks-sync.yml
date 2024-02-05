@@ -80,9 +80,11 @@ jobs:
 
       - name: Push changes
         run: |
+          git remote -v
           git fetch origin ${{ env.UPDATER_BRANCH }} && \
           git pull origin ${{ env.UPDATER_BRANCH }} && \
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
+          git remote -v
           git push origin ${{ env.UPDATER_BRANCH }}
 
       - name: Create Pull Request
