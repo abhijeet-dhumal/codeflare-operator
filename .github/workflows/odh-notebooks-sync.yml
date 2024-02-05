@@ -24,7 +24,6 @@ jobs:
       - name: Fork repository
         id: fork
         run: | 
-          REPO_NAME=abhijeet-dhumal/notebooks
           git clone --depth 1 --branch main "https://github.com/$REPO_NAME.git" notebooks
           cd notebooks 
           git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
@@ -32,6 +31,7 @@ jobs:
           echo "::set-output name=notebooks::$REPO_NAME"
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          REPO_NAME: abhijeet-dhumal/notebooks
         shell: bash
 
       - name: Create a new branch
