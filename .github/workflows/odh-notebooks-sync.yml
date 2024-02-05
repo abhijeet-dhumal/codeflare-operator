@@ -38,13 +38,14 @@ jobs:
       - name: Create a new branch
         run: |
           echo ${{ env.UPDATER_BRANCH }}
+          git remote -v 
+          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
           git checkout -b ${{ env.UPDATER_BRANCH }}
           git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
-
-      - name: Set up Git
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          REPO_NAME: abhijeet-dhumal/notebooks
+        shell: bash
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
@@ -81,11 +82,16 @@ jobs:
       - name: Push changes
         run: |
           git remote -v
+          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
           git fetch origin ${{ env.UPDATER_BRANCH }} && \
           git pull origin ${{ env.UPDATER_BRANCH }} && \
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
           git remote -v
           git push origin ${{ env.UPDATER_BRANCH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          REPO_NAME: abhijeet-dhumal/notebooks
+        shell: bash
 
       - name: Create Pull Request
         run: | 
