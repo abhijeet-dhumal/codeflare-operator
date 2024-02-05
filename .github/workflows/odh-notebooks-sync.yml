@@ -12,6 +12,8 @@ env:
   BRANCH_NAME: main
   CODEFLARE_RELEASE_VERSION: ${{ github.event.inputs.codeflare_sdk_release_version }}
   UPDATER_BRANCH: odh-sync-updater-${{ github.run_id }}
+  GITHUB_TOKEN: ${{ secrets.TOKEN }}
+  REPO_NAME: abhijeet-dhumal/notebooks
 
 jobs:
   build:
@@ -30,21 +32,9 @@ jobs:
           git remote -v 
           git push -u origin main
           echo "::set-output name=notebooks::$REPO_NAME"
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          REPO_NAME: abhijeet-dhumal/notebooks
-        shell: bash
-
-      - name: Create a new branch
-        run: |
           echo ${{ env.UPDATER_BRANCH }}
-          git remote -v 
-          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
           git checkout -b ${{ env.UPDATER_BRANCH }}
           git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          REPO_NAME: abhijeet-dhumal/notebooks
         shell: bash
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
@@ -78,6 +68,7 @@ jobs:
           for dir in "${directories[@]}"; do
             sed -i 's/codeflare-sdk = "~=.*"/codeflare-sdk = "~='"${CODEFLARE_RELEASE_VERSION}"'"/' $dir/Pipfile
           done
+        shell: bash
 
       - name: Push changes
         run: |
@@ -88,9 +79,6 @@ jobs:
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
           git remote -v
           git push origin ${{ env.UPDATER_BRANCH }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          REPO_NAME: abhijeet-dhumal/notebooks
         shell: bash
 
       - name: Create Pull Request
@@ -101,8 +89,5 @@ jobs:
           --label "automated pr"
           --head abhijeet-dhumal:${{ env.UPDATER_BRANCH }} \
           --base main
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         shell: bash
-
         
