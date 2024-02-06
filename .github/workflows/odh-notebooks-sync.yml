@@ -29,7 +29,7 @@ jobs:
           # Clone the forked repository
           git clone https://github.com/abhijeet-dhumal/notebooks.git notebooks
           cd notebooks
-          
+
       - name: Create a new branch
         run: |
           echo ${{ env.UPDATER_BRANCH }}
@@ -91,10 +91,10 @@ jobs:
       - name: Push changes to forked repository
         run: |
           cd notebooks
-          git status
           git add .
-          git fetch origin ${{ env.UPDATER_BRANCH }} &&
-          git pull origin ${{ env.UPDATER_BRANCH }} &&
+          git status
+          git checkout ${{ env.UPDATER_BRANCH }}
+          git status
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" --signoff  &&
           git remote -v 
           git push origin ${{ env.UPDATER_BRANCH }}
