@@ -107,13 +107,10 @@ jobs:
             --base $BRANCH_NAME 
         env:
           pr_label: "automated pr"
-          pr_title: "[Digest Updater Action] Update notebook's pipfile to sync with Codeflare-SDK release"
+          pr_title: "Update notebook's pipfile to sync with Codeflare-SDK release"
           pr_body: |
             :rocket: This is an automated Pull Request.
-
             This PR updates the `Pipfile` to sync with latest Codeflare-SDK release.
-
             Created by `/.github/workflows/codeflare-sdk-release-sync.yaml`
-
             :exclamation: **IMPORTANT NOTE**: Remember to delete the ` ${{ env.UPDATER_BRANCH }}` branch after merging the changes
 
