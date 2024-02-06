@@ -61,8 +61,10 @@ jobs:
           done
           # iterate over the directories and update Pipfile
           for dir in "${directories[@]}"; do
-            #sed -i 's/codeflare-sdk = "~=.*"/codeflare-sdk = "~='"${CODEFLARE_RELEASE_VERSION}"'"/' $dir/Pipfile
-            cd "$dir" && pipenv install codeflare-sdk~="${CODEFLARE_RELEASE_VERSION}" && pipenv --rm && cd -
+            cd "$dir" 
+            pipenv install codeflare-sdk~="${CODEFLARE_RELEASE_VERSION}"
+            pipenv --rm 
+            cd -
           done
 
       - name: Push changes to forked repository
