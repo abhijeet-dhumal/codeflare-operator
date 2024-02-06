@@ -1,19 +1,17 @@
----
-# The aim of this GitHub workflow is to update the pipfile to sync with Codeflare-SDK release.
-name: Sync with codeflare-sdk release
-on:  # yamllint disable-line rule:truthy
+name: Sync with Codeflare-SDK Release
+on:
   workflow_dispatch:
     inputs:
       codeflare_sdk_release_version:
         required: true
-        description: "Provide the version of the codeflare release you want to update to : "
-
+        description: "Provide the version of the Codeflare release you want to update to"
+        
 env:
   BRANCH_NAME: main
   CODEFLARE_RELEASE_VERSION: ${{ github.event.inputs.codeflare_sdk_release_version }}
   UPDATER_BRANCH: odh-sync-updater-${{ github.run_id }}
-  GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  REPO_NAME: abhijeet-dhumal/notebooks
+  REPO_OWNER: abhijeet-dhumal
+  REPO_NAME: notebooks
 
 jobs:
   build:
@@ -21,17 +19,26 @@ jobs:
     steps:
       - name: Fork repository
         id: fork
-        run: | 
-          git clone --depth 1 --branch main "https://github.com/$REPO_NAME.git" notebooks
-          cd notebooks 
-          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
-          git remote -v 
-          git push -u origin main
-          echo "::set-output name=notebooks::$REPO_NAME"
-          echo ${{ env.UPDATER_BRANCH }}
-          git checkout -b ${{ env.UPDATER_BRANCH }}
-          git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
-        shell: bash
+        run: |
+          TOKEN=${{ secrets.TOKEN }}
+          REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
+          # Fork the repository
+          gh repo fork $REPO_FULL_NAME --clone
+          # Set up Git
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          # Clone the forked repository
+          git clone https://github.com/$GITHUB_REPOSITORY notebooks
+          cd notebooks
+          git remote add upstream "https://github.com/$REPO_FULL_NAME.git"
+          git remote -v
+          git checkout -b $UPDATER_BRANCH
+          git push --set-upstream origin $UPDATER_BRANCH
+
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.BRANCH_NAME }}
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
@@ -64,26 +71,20 @@ jobs:
           for dir in "${directories[@]}"; do
             sed -i 's/codeflare-sdk = "~=.*"/codeflare-sdk = "~='"${CODEFLARE_RELEASE_VERSION}"'"/' $dir/Pipfile
           done
-        shell: bash
 
-      - name: Push changes
+      - name: Push changes to forked repository
         run: |
-          git remote -v
-          git remote set-url origin "https://$GITHUB_TOKEN@github.com/$REPO_NAME.git"
-          git fetch origin ${{ env.UPDATER_BRANCH }} && \
-          git pull origin ${{ env.UPDATER_BRANCH }} && \
-          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
-          git remote -v
+          git fetch origin ${{ env.UPDATER_BRANCH }} &&
+          git pull origin ${{ env.UPDATER_BRANCH }} &&
+          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" &&
+          git remote -v 
           git push origin ${{ env.UPDATER_BRANCH }}
-        shell: bash
 
       - name: Create Pull Request
-        run: | 
-          gh pr create --repo github.com/abhijeet-dhumal/notebooks \
-          --title "CodeFlare $(BUNDLE_VERSION)" \ 
-          --body ":rocket: This is an automated Pull Request. \n \n This PR updates the `Pipfile` to sync with latest Codeflare-SDK release. \n\n Created by `/.github/workflows/codeflare-sdk-release-sync.yaml` \n\n :exclamation: **IMPORTANT NOTE**: Remember to delete the ` ${{ env.UPDATER_BRANCH }}` branch after merging the changes" \
-          --label "automated pr"
-          --head abhijeet-dhumal:${{ env.UPDATER_BRANCH }} \
-          --base main
-        shell: bash
-        
+        run: |
+          gh pr create --repo $REPO_FULL_NAME \
+            --title "[Digest Updater Action] Update notebook's pipfile to sync with Codeflare-SDK release version ${CODEFLARE_RELEASE_VERSION}" \
+            --body ":rocket: This is an automated Pull Request. \n \n This PR updates the \`Pipfile\` to sync with the latest Codeflare-SDK release. \n\n Created by \`/.github/workflows/codeflare-sdk-release-sync.yaml\` \n\n :exclamation: **IMPORTANT NOTE**: Remember to delete the \`$UPDATER_BRANCH\` branch after merging the changes" \
+            --label "automated pr" \
+            --head $REPO_OWNER:${UPDATER_BRANCH} \
+            --base $BRANCH_NAME 
