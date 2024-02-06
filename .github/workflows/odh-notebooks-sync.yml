@@ -18,6 +18,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.BRANCH_NAME }}
+          
       - name: Fork repository
         id: fork
         run: |
@@ -34,11 +39,6 @@ jobs:
           git remote -v
           git checkout -b $UPDATER_BRANCH
           git push --set-upstream origin $UPDATER_BRANCH
-
-      - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.repository }}
-          ref: ${{ env.BRANCH_NAME }}
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
