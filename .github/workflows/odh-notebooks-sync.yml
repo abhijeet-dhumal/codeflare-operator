@@ -23,7 +23,7 @@ jobs:
         run: |
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Fork the repository
-          gh repo fork $REPO_FULL_NAME --clone
+          gh repo fork github.com/$REPO_FULL_NAME --clone
           # Set up Git
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
