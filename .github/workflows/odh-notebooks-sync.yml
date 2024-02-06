@@ -29,12 +29,9 @@ jobs:
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Clone the forked repository
           git clone https://x-access-token:$(GITHUB_TOKEN)@github.com/abhijeet-dhumal/notebooks.git notebooks
-          cd notebooks
-          git remote add upstream "https://github.com/abhijeet-dhumal/notebooks.git"
-          git remote -v
+          cd notebooks && \
+          git remote add upstream "https://github.com/abhijeet-dhumal/notebooks.git" && \
           git pull upstream main && git push origin main
-          git checkout -b $UPDATER_BRANCH
-          git push --set-upstream origin $UPDATER_BRANCH
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
@@ -71,6 +68,8 @@ jobs:
 
       - name: Push changes to forked repository
         run: |
+          git add .
+          git checkout -b $UPDATER_BRANCH
           git fetch origin ${{ env.UPDATER_BRANCH }} &&
           git pull origin ${{ env.UPDATER_BRANCH }} &&
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" --signoff  &&
