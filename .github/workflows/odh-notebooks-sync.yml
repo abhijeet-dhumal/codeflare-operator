@@ -27,7 +27,7 @@ jobs:
         run: |
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Clone the forked repository
-          git clone https://x-access-token:$(GITHUB_TOKEN)@github.com/abhijeet-dhumal/notebooks.git notebooks
+          git clone https://github.com/abhijeet-dhumal/notebooks.git notebooks
           cd notebooks
 
       - name: Create a new branch
@@ -103,7 +103,6 @@ jobs:
             --title "$pr_title" \
             --body "$pr_body" \
             --label "$pr_label" \
-            --head $REPO_OWNER:$UPDATER_BRANCH \
             --base $BRANCH_NAME 
         env:
           pr_label: "automated pr"
