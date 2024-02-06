@@ -12,6 +12,7 @@ env:
   UPDATER_BRANCH: odh-sync-updater-${{ github.run_id }}
   REPO_OWNER: abhijeet-dhumal
   REPO_NAME: notebooks
+  GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
 jobs:
   build:
@@ -20,7 +21,6 @@ jobs:
       - name: Fork repository
         id: fork
         run: |
-          TOKEN=${{ secrets.TOKEN }}
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Fork the repository
           gh repo fork $REPO_FULL_NAME --clone
