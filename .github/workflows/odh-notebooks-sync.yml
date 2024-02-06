@@ -30,8 +30,7 @@ jobs:
           # Clone the forked repository
           git clone https://x-access-token:$(GITHUB_TOKEN)@github.com/abhijeet-dhumal/notebooks.git notebooks
           cd notebooks && \
-          git remote add upstream "https://github.com/abhijeet-dhumal/notebooks.git" && \
-          git pull upstream main && git push origin main
+          git remote add upstream "https://github.com/abhijeet-dhumal/notebooks.git"
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
