@@ -100,9 +100,9 @@ jobs:
       - name: Create Pull Request
         run: |
           gh pr create --repo abhijeet-dhumal/notebooks \
-            --title $pr_title \
-            --body $pr_body \
-            --label $pr_label \
+            --title "$pr_title" \
+            --body "$pr_body" \
+            --label "$pr_label" \
             --head $REPO_OWNER:$UPDATER_BRANCH \
             --base $BRANCH_NAME 
         env:
