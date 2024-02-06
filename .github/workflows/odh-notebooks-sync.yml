@@ -87,11 +87,10 @@ jobs:
           pipenv --rm
           cd -
           # done
-          git status
 
       - name: Push changes to forked repository
         run: |
-          pwd | echo
+          cd notebooks &&
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action"  &&
           git status
           git push origin ${{ env.UPDATER_BRANCH }}
