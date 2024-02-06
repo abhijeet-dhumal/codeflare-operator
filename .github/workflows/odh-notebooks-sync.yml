@@ -23,17 +23,14 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ env.BRANCH_NAME }}
 
-      - name: Fork repository
-        id: fork
+      - name: Clone repository
+        id: Clone
         run: |
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
-          # Set up Git
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
           # Clone the forked repository
-          git clone https://x-access-token:$(GITHUBH_TOKEN)@github.com/$REPO_FULL_NAME.git notebooks
+          git clone https://github.com/$REPO_FULL_NAME.git notebooks
           cd notebooks
-          git remote add upstream "https://x-access-token:$(GITHUBH_TOKEN)@github.com/$REPO_FULL_NAME.git"
+          git remote add upstream "https://github.com/$REPO_FULL_NAME.git"
           git remote -v
           git pull upstream main && git push origin main
           git checkout -b $UPDATER_BRANCH
@@ -68,7 +65,8 @@ jobs:
           done
           # iterate over the directories and update Pipfile
           for dir in "${directories[@]}"; do
-            sed -i 's/codeflare-sdk = "~=.*"/codeflare-sdk = "~='"${CODEFLARE_RELEASE_VERSION}"'"/' $dir/Pipfile
+            #sed -i 's/codeflare-sdk = "~=.*"/codeflare-sdk = "~='"${CODEFLARE_RELEASE_VERSION}"'"/' $dir/Pipfile
+            cd "$dir" && pipenv install codeflare-sdk~="${CODEFLARE_RELEASE_VERSION}" && pipenv --rm && cd -
           done
 
       - name: Push changes to forked repository
