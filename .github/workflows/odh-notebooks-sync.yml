@@ -32,6 +32,7 @@ jobs:
 
       - name: Create a new branch
         run: |
+          cd notebooks
           echo ${{ env.UPDATER_BRANCH }}
           git checkout -b ${{ env.UPDATER_BRANCH }}
           git push --set-upstream origin ${{ env.UPDATER_BRANCH }}:${{ env.UPDATER_BRANCH }}
@@ -90,10 +91,11 @@ jobs:
 
       - name: Push changes to forked repository
         run: |
-          cd notebooks &&
-          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action"  &&
-          git status
+          cd notebooks
           git remote -v
+          git fetch origin ${{ env.UPDATER_BRANCH }} && \
+          git pull origin ${{ env.UPDATER_BRANCH }} && \
+          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" && \
           git push origin ${{ env.UPDATER_BRANCH }}
 
       - name: Create Pull Request
