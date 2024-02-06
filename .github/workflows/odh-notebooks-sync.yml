@@ -31,10 +31,11 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
           # Clone the forked repository
-          git clone https://github.com/$REPO_FULL_NAME.git notebooks
+          git clone https://x-access-token:$(GITHUBH_TOKEN)@github.com/$REPO_FULL_NAME.git notebooks
           cd notebooks
           git remote add upstream "https://github.com/$REPO_FULL_NAME.git"
           git remote -v
+          git pull upstream main && git push origin main
           git checkout -b $UPDATER_BRANCH
           git push --set-upstream origin $UPDATER_BRANCH
 
@@ -74,7 +75,7 @@ jobs:
         run: |
           git fetch origin ${{ env.UPDATER_BRANCH }} &&
           git pull origin ${{ env.UPDATER_BRANCH }} &&
-          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" &&
+          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" --signoff  &&
           git remote -v 
           git push origin ${{ env.UPDATER_BRANCH }}
 
