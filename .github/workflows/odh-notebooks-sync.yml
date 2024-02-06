@@ -33,7 +33,7 @@ jobs:
           # Clone the forked repository
           git clone https://x-access-token:$(GITHUBH_TOKEN)@github.com/$REPO_FULL_NAME.git notebooks
           cd notebooks
-          git remote add upstream "https://github.com/$REPO_FULL_NAME.git"
+          git remote add upstream "https://x-access-token:$(GITHUBH_TOKEN)@github.com/$REPO_FULL_NAME.git"
           git remote -v
           git pull upstream main && git push origin main
           git checkout -b $UPDATER_BRANCH
