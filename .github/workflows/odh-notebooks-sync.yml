@@ -35,7 +35,7 @@ jobs:
           cd notebooks
           echo ${{ env.UPDATER_BRANCH }}
           git checkout -b ${{ env.UPDATER_BRANCH }}
-          git push --set-upstream origin ${{ env.UPDATER_BRANCH }}:${{ env.UPDATER_BRANCH }}
+          git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
 
       - name: Set up Git
         run: |
