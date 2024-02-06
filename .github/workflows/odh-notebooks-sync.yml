@@ -27,21 +27,15 @@ jobs:
         run: |
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Clone the forked repository
-          git clone https://github.com/abhijeet-dhumal/notebooks.git notebooks
-          cd notebooks
-
-      - name: Create a new branch
-        run: |
+          git clone https://x-access-token:$(GITHUB_TOKEN)@github.com/abhijeet-dhumal/notebooks.git notebooks
           cd notebooks
           echo ${{ env.UPDATER_BRANCH }}
           git checkout -b ${{ env.UPDATER_BRANCH }}
+          git remote -v
+          git config --global user.email "abhijeetdhumal652@gmail.com"
+          git config --global user.name "abhijeet-dhumal"
           git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
 
-      - name: Set up Git
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
-      
       # Setup Python environment
       - name: Setup Python environment
         uses: actions/setup-python@v4
@@ -92,6 +86,7 @@ jobs:
       - name: Push changes to forked repository
         run: |
           cd notebooks
+          git status
           git remote -v
           git fetch origin ${{ env.UPDATER_BRANCH }} && \
           git pull origin ${{ env.UPDATER_BRANCH }} && \
