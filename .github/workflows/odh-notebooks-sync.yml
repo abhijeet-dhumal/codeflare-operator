@@ -93,7 +93,7 @@ jobs:
           git add .
           git fetch origin ${{ env.UPDATER_BRANCH }} &&
           git pull origin ${{ env.UPDATER_BRANCH }} &&
-          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" --signoff  &&
+          git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action"  &&
           git remote -v 
           git push origin ${{ env.UPDATER_BRANCH }}
 
@@ -103,6 +103,7 @@ jobs:
             --title "$pr_title" \
             --body "$pr_body" \
             --label "$pr_label" \
+            --head $REPO_OWNER:$UPDATER_BRANCH \
             --base $BRANCH_NAME 
         env:
           pr_label: "automated pr"
