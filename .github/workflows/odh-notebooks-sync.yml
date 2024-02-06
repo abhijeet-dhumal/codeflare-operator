@@ -18,9 +18,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.repository }}
+      - uses: actions/checkout@v3
+        with:          
           ref: ${{ env.BRANCH_NAME }}
 
       - name: Clone repository
@@ -29,8 +28,28 @@ jobs:
           REPO_FULL_NAME=$REPO_OWNER/$REPO_NAME
           # Clone the forked repository
           git clone https://x-access-token:$(GITHUB_TOKEN)@github.com/abhijeet-dhumal/notebooks.git notebooks
-          cd notebooks && \
-          git remote add upstream "https://github.com/abhijeet-dhumal/notebooks.git"
+          cd notebooks
+
+      - name: Create a new branch
+        run: |
+          echo ${{ env.UPDATER_BRANCH }}
+          git checkout -b ${{ env.UPDATER_BRANCH }}
+          git push --set-upstream origin ${{ env.UPDATER_BRANCH }}
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+      
+      # Setup Python environment
+      - name: Setup Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: |
+            3.8
+            3.9
+      - name: Install pipenv
+        run: pip install pipenv
 
       - name: Update Pipfiles in accordance with Codeflare-SDK latest release
         run: |
@@ -70,7 +89,6 @@ jobs:
       - name: Push changes to forked repository
         run: |
           git add .
-          git checkout -b $UPDATER_BRANCH
           git fetch origin ${{ env.UPDATER_BRANCH }} &&
           git pull origin ${{ env.UPDATER_BRANCH }} &&
           git commit -am "Updated Codeflare-SDK via ${{ env.UPDATER_BRANCH }} GitHub action" --signoff  &&
