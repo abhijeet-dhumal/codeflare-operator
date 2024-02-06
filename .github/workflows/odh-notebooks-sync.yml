@@ -80,12 +80,13 @@ jobs:
             echo "- $dir"
           done
           # iterate over the directories and update Pipfile
-          for dir in "${directories[@]}"; do
-            cd "$dir"
-            pipenv install codeflare-sdk~="${CODEFLARE_RELEASE_VERSION}"
-            pipenv --rm
-            cd -
-          done
+          # for dir in "${directories[@]}"; do
+          dir=notebooks/jupyter/datascience/ubi8-python-3.8
+          cd "$dir"
+          pipenv install codeflare-sdk~="${CODEFLARE_RELEASE_VERSION}"
+          pipenv --rm
+          cd -
+          # done
 
       - name: Push changes to forked repository
         run: |
@@ -97,10 +98,21 @@ jobs:
           git push origin ${{ env.UPDATER_BRANCH }}
 
       - name: Create Pull Request
+        with: 
+          pr_label: "automated pr"
+          pr_title: "[Digest Updater Action] Update notebook's pipfile to sync with Codeflare-SDK release"
+          pr_body: |
+            :rocket: This is an automated Pull Request.
+
+            This PR updates the `Pipfile` to sync with latest Codeflare-SDK release.
+
+            Created by `/.github/workflows/codeflare-sdk-release-sync.yaml`
+
+            :exclamation: **IMPORTANT NOTE**: Remember to delete the ` ${{ env.UPDATER_BRANCH }}` branch after merging the changes
         run: |
           gh pr create --repo abhijeet-dhumal/notebooks \
-            --title "[Digest Updater Action] Update notebook's pipfile to sync with Codeflare-SDK release version '${{ CODEFLARE_RELEASE_VERSION }}'" \
-            --body ":rocket: This is an automated Pull Request. \n \n This PR updates the \`Pipfile\` to sync with the latest Codeflare-SDK release. \n\n Created by \`/.github/workflows/codeflare-sdk-release-sync.yaml\` \n\n :exclamation: **IMPORTANT NOTE**: Remember to delete the \`$UPDATER_BRANCH\` branch after merging the changes" \
-            --label "automated pr" \
+            --title "${{ inputs.pr_title }}" \
+            --body "${{ inputs.pr_body }}" \
+            --label "${{ inputs.pr_body }}" \
             --head $REPO_OWNER:${UPDATER_BRANCH} \
             --base $BRANCH_NAME 
